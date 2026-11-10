@@ -111,15 +111,15 @@ palavras.txt: 64 palavras, uma por linha
 
 ## Uso do GitHub Copilot
 
-<!-- PREENCHER com o que vocês realmente fizeram no VS Code. -->
+Usei o chat do GitHub Copilot no VS Code, no modo **Ask** (só perguntas, sem deixar ele alterar os arquivos). Não pedi para ele criar o jogo; selecionei funções prontas e pedi explicações ou melhorias.
 
 | Prompt | Função assistida | O que aproveitei ou mudei |
 |---|---|---|
-| "..." | | |
-| "..." | | |
-| "..." | | |
+| "Explique passo a passo como esta função remove os acentos de uma palavra" | `normalizar` | Usei a explicação para entender o caminho `strip` → `NFD` (separa letra e acento) → descarta a categoria `Mn` → `upper`. Não alterei o código. |
+| "Sugira melhorias para esta função que lê as palavras do arquivo" | `carregar_palavras` | Aceitei usar um `set` (`vistas`) para detectar palavras repetidas. Descartei trocar a validação por `isalpha()`, porque ela aceita letras fora de A-Z que o teclado virtual não tem, e descartei devolver a lista ordenada, porque a palavra é sorteada. |
+| "Como posso deixar o desenho deste boneco mais bonito no FreeSimpleGUI?" | `desenhar_boneco` | Descartei a sugestão. O código proposto desenhava as partes com `partes[:erros - 1]`, então com 6 erros o boneco ficaria com 5 partes, e o desenho e o contador ficariam fora de sincronia. Mantive `partes[:erros]`. |
 
-**Relato.** <!-- Um parágrafo: em quais funções o Copilot ajudou, uma sugestão aceita, uma corrigida ou descartada e por quê. -->
+**Relato.** O Copilot ajudou em três funções: `normalizar`, `carregar_palavras` e `desenhar_boneco`. Em `normalizar`, a explicação passo a passo me ajudou a entender como o `unicodedata` separa a letra do acento antes de descartá-lo. Aceitei a sugestão de usar um `set` em `carregar_palavras` para verificar palavras repetidas, porque procurar em um conjunto é mais rápido do que percorrer a lista, e a ordem das palavras continua na lista. Descartei a troca por `isalpha()`, que aceitaria letras como `ß` ou `Ø` (que não têm acento para remover) e que não existem no teclado do jogo, e corrigi a sugestão do desenho do boneco, que usava `erros - 1` e deixaria o boneco incompleto na derrota. Aprendi que é preciso testar o que o Copilot sugere, porque uma mudança "estética" pode quebrar uma regra do jogo.
 
 ## Tecnologias
 
