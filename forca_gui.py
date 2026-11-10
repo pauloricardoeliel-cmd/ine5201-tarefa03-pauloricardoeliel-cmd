@@ -67,13 +67,15 @@ def carregar_palavras(arquivo):
     houver menos de MIN_PALAVRAS palavras válidas.
     """
     palavras = []
+    vistas = set()      # set: verificar repetidas é mais rápido que na lista
     with open(arquivo, encoding='utf-8') as f:
         for linha in f:
             palavra = normalizar(linha)
             if not palavra or palavra.startswith('#'):
                 continue
-            if all(letra in ALFABETO for letra in palavra) and palavra not in palavras:
+            if all(letra in ALFABETO for letra in palavra) and palavra not in vistas:
                 palavras.append(palavra)
+                vistas.add(palavra)
 
     if len(palavras) < MIN_PALAVRAS:
         raise ValueError(f'O arquivo tem só {len(palavras)} palavras válidas; '
