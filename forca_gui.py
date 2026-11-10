@@ -46,3 +46,66 @@ COR_DERROTA = '#E74C3C'
 COR_AVISO = '#F39C12'
 
 
+# ============================== Arquivos ==============================
+
+def normalizar(texto):
+    """Tira acentos e espaços e passa para maiúsculas: ' Coração ' -> 'CORACAO'.
+
+    unicodedata separa cada letra do seu acento (NFD); depois
+    descartamos os acentos, que são da categoria 'Mn'.
+    """
+    decomposto = unicodedata.normalize('NFD', texto.strip())
+    sem_acento = ''.join(c for c in decomposto if unicodedata.category(c) != 'Mn')
+    return sem_acento.upper()
+
+
+def carregar_palavras(arquivo):
+    """Lê o arquivo e devolve a lista de palavras válidas, sem repetições.
+
+    Ignora linhas vazias, comentários (#) e linhas com algo além de letras.
+    Lança FileNotFoundError se o arquivo não existir e ValueError se
+    houver menos de MIN_PALAVRAS palavras válidas.
+    """
+    palavras = []
+    with open(arquivo, encoding='utf-8') as f:
+        for linha in f:
+            palavra = normalizar(linha)
+            if not palavra or palavra.startswith('#'):
+                continue
+            if all(letra in ALFABETO for letra in palavra) and palavra not in palavras:
+                palavras.append(palavra)
+
+    if len(palavras) < MIN_PALAVRAS:
+        raise ValueError(f'O arquivo tem só {len(palavras)} palavras válidas; '
+                         f'o mínimo é {MIN_PALAVRAS}.')
+    return palavras
+
+
+def escolher_palavra(lista, anterior=''):
+    """Sorteia uma palavra, evitando repetir a da partida anterior."""
+    opcoes = [p for p in lista if p != anterior]
+    return random.choice(opcoes)
+
+
+def carregar_estatisticas():
+    """Lê vitórias e derrotas salvas. Se o arquivo não existir ou estiver
+    corrompido, começa do zero."""
+    estatisticas = {'vitorias': 0, 'derrotas': 0}
+    try:
+        with open(ARQUIVO_ESTATISTICAS, encoding='utf-8') as f:
+            for linha in f:
+                chave, valor = linha.strip().split('=')
+                if chave in estatisticas:
+                    estatisticas[chave] = int(valor)
+    except (FileNotFoundError, ValueError):
+        pass
+    return estatisticas
+
+
+def salvar_estatisticas(vitorias, derrotas):
+    """Grava as estatísticas no formato 'chave=valor', uma por linha."""
+    with open(ARQUIVO_ESTATISTICAS, 'w', encoding='utf-8') as f:
+        f.write(f'vitorias={vitorias}\n')
+        f.write(f'derrotas={derrotas}\n')
+
+
