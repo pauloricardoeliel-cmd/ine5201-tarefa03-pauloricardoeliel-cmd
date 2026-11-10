@@ -109,3 +109,60 @@ def salvar_estatisticas(vitorias, derrotas):
         f.write(f'derrotas={derrotas}\n')
 
 
+# ============================== Lógica do jogo ==============================
+
+def atualizar_display(palavra, letras_tentadas):
+    """Monta o texto da palavra com as letras não descobertas ocultas.
+
+    Exemplo: atualizar_display('PYTHON', {'P', 'O'}) -> 'P _ _ _ O _'
+    """
+    return ' '.join(letra if letra in letras_tentadas else '_' for letra in palavra)
+
+
+def verificar_vitoria(palavra, letras_tentadas):
+    """Vence quando todas as letras da palavra já foram tentadas."""
+    return set(palavra) <= letras_tentadas
+
+
+def letras_erradas(palavra, letras_tentadas):
+    """Letras tentadas que não estão na palavra, em ordem alfabética."""
+    return sorted(letra for letra in letras_tentadas if letra not in palavra)
+
+
+def contar_erros(estado):
+    return len(letras_erradas(estado['palavra'], estado['tentadas'])) + estado['dicas_usadas']
+
+
+def tentar_letra(estado, letra):
+    """Registra uma tentativa e devolve 'repetida', 'acerto' ou 'erro'."""
+    if letra in estado['tentadas']:
+        return 'repetida'
+    estado['tentadas'].add(letra)
+    return 'acerto' if letra in estado['palavra'] else 'erro'
+
+
+def revelar_dica(estado):
+    """Revela uma letra oculta ao custo de uma tentativa.
+
+    Devolve a letra revelada, ou None se a dica não puder ser usada
+    (já usada nesta partida ou só resta uma tentativa).
+    """
+    ocultas = [l for l in set(estado['palavra']) if l not in estado['tentadas']]
+    if estado['dicas_usadas'] >= 1 or MAX_ERROS - contar_erros(estado) <= 1 or not ocultas:
+        return None
+    letra = random.choice(ocultas)
+    estado['tentadas'].add(letra)
+    estado['dicas_usadas'] += 1
+    return letra
+
+
+def novo_estado(palavras, anterior=''):
+    return {
+        'palavra': escolher_palavra(palavras, anterior),
+        'tentadas': set(),
+        'dicas_usadas': 0,
+        'ativo': True,          # False depois de vitória, derrota ou desistência
+        'revelada': False,      # True para mostrar a palavra inteira ao perder
+    }
+
+
