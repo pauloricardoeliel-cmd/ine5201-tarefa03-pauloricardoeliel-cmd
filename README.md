@@ -46,6 +46,7 @@ Uma palavra é sorteada e aparece com as letras ocultas (`_ _ _ _`). Clique nas 
 **Regras e validações**
 - Máximo de 6 erros
 - Letra repetida não conta como erro: aparece o aviso "A letra X já foi tentada"
+- O teclado do computador também funciona; letras acentuadas digitadas (como ç ou á) viram a letra sem acento
 - Ao perder ou desistir, a palavra inteira é revelada
 - A nova palavra nunca é igual à da partida anterior
 - Depois do fim da partida, o teclado fica bloqueado até clicar em **Novo Jogo**
